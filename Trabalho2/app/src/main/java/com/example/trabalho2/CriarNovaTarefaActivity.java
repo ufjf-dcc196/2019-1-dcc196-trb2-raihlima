@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Toast;
@@ -39,8 +40,15 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
                 if (verificaPreenchimento()) {
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
-                    intent.putExtra("info", bundle);
 
+                    bundle.putString("titulo",titulo.getText().toString());
+                    bundle.putString("descricao", descricao.getText().toString());
+                    bundle.putString("dataLimite",dataLimite.getText().toString());
+                    bundle.putInt("dificuldade", (int) dificuldade.getRating());
+                    RadioButton radioButton = (RadioButton) estado.findViewById(estado.getCheckedRadioButtonId());
+                    bundle.putString("estado",radioButton.getText().toString());
+
+                    intent.putExtra("info", bundle);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {

@@ -9,19 +9,37 @@ public class Tarefa {
     private int dificuldade;
     private String dataLimite;
     private String dataAtualizacao;
+    private String estado;
     private List<String> tags;
 
     public Tarefa() {
         this.tags = new ArrayList<>();
     }
 
-    public Tarefa(String titulo, String descricao, int dificuldade, String dataLimite, String dataAtualizacao) {
+    public Tarefa(String titulo, String descricao, int dificuldade, String dataLimite, String dataAtualizacao, String estado) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.dificuldade = dificuldade;
         this.dataLimite = dataLimite;
         this.dataAtualizacao = dataAtualizacao;
+        this.estado = estado;
         this.tags = new ArrayList<>();
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public String getTitulo() {

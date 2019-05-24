@@ -8,25 +8,26 @@
     android:paddingBottom="20dp">
 
     <TextView
-        android:id="@+id/txtNomeDisciplinaLD"
+        android:id="@+id/tituloTxtTarefaLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:text="Titulo" />
+        android:layout_weight="15"
+        android:gravity="center"
+        android:text="Nome" />
 
     <TextView
-        android:id="@+id/txtHorasLD"
+        android:id="@+id/dificuldadeTxtTarefaLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:text="Horas"
+        android:layout_weight="1"
+        android:text="Dificuldade"
         android:textAlignment="center" />
 
     <TextView
-        android:id="@+id/txtCursoLD"
+        android:id="@+id/estadoTxtTarefaLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:text="Curso"
-        android:gravity="right" />
+        android:layout_weight="15"
+        android:gravity="center"
+        android:text="Estado" />
 </LinearLayout>
