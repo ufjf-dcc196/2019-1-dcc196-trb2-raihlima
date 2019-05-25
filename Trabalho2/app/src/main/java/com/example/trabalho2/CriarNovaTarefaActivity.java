@@ -1,7 +1,10 @@
 package com.example.trabalho2;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +15,9 @@ import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.example.trabalho2.dados.TarefaContract;
+import com.example.trabalho2.dados.TarefaDBHelper;
+
 public class CriarNovaTarefaActivity extends AppCompatActivity {
 
     private EditText titulo;
@@ -20,6 +26,12 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
     private RatingBar dificuldade;
     private RadioGroup estado;
     private Button criarTarefa;
+
+    //Banco de Dados
+    private Cursor cursor;
+    private ContentValues contentValues;
+    private SQLiteDatabase sqLiteDatabase;
+    private TarefaDBHelper tarefaDBHelper;
 
 
     @Override
@@ -34,18 +46,32 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
         estado = (RadioGroup) findViewById(R.id.estadoRadioGroup);
         criarTarefa = (Button) findViewById(R.id.confirmarNovaTarefaButton);
 
+        tarefaDBHelper = new TarefaDBHelper(getApplicationContext());
+        sqLiteDatabase = tarefaDBHelper.getWritableDatabase();
+        contentValues = new ContentValues();
+
         criarTarefa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (verificaPreenchimento()) {
+                    RadioButton radioButton = (RadioButton) estado.findViewById(estado.getCheckedRadioButtonId());
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
+
+                    contentValues.put(TarefaContract.TarefaDados.COLUNM_TITULO,"jAO");//titulo.getText().toString());
+                    //contentValues.put(TarefaContract.TarefaDados.COLUNM_DESCRICAO,descricao.getText().toString());
+                    //contentValues.put(TarefaContract.TarefaDados.COLUMN_DIFICULDADE, (int) dificuldade.getRating());
+                    //contentValues.put(TarefaContract.TarefaDados.COLUMN_ESTADO, radioButton.getText().toString());
+                    long novoId = sqLiteDatabase.insert(TarefaContract.TarefaDados.TABLE_NAME, null, contentValues);
+
+
+                    Toast.makeText(CriarNovaTarefaActivity.this,"Novo id: " +novoId ,Toast.LENGTH_SHORT).show();
+
 
                     bundle.putString("titulo",titulo.getText().toString());
                     bundle.putString("descricao", descricao.getText().toString());
                     bundle.putString("dataLimite",dataLimite.getText().toString());
                     bundle.putInt("dificuldade", (int) dificuldade.getRating());
-                    RadioButton radioButton = (RadioButton) estado.findViewById(estado.getCheckedRadioButtonId());
                     bundle.putString("estado",radioButton.getText().toString());
 
                     intent.putExtra("info", bundle);
