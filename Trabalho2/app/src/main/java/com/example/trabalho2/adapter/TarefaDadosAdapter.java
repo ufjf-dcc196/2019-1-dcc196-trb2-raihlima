@@ -10,11 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.trabalho2.R;
-import com.example.trabalho2.classes.Tarefa;
 import com.example.trabalho2.dados.TarefaContract;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class TarefaDadosAdapter extends RecyclerView.Adapter <TarefaDadosAdapter.ViewHolder>{
 
@@ -26,7 +23,7 @@ public class TarefaDadosAdapter extends RecyclerView.Adapter <TarefaDadosAdapter
     }
 
     public TarefaDadosAdapter(Cursor cursor) {
-            this.cursor = cursor;
+        this.cursor = cursor;
     }
 
     public void alteraDados(Cursor cursor){
@@ -52,7 +49,7 @@ public class TarefaDadosAdapter extends RecyclerView.Adapter <TarefaDadosAdapter
     @Override
     public void onBindViewHolder(@NonNull TarefaDadosAdapter.ViewHolder viewHolder, int index) {
         cursor.moveToPosition(index);
-        String titulo = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUNM_TITULO));
+        String titulo = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_TITULO));
         String dificuldade = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DIFICULDADE));
         String estado = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_ESTADO));
 

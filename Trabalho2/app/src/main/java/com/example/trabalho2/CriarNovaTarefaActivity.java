@@ -15,11 +15,12 @@ import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.example.trabalho2.classes.Mascara;
 import com.example.trabalho2.dados.TarefaContract;
 import com.example.trabalho2.dados.TarefaDBHelper;
 
-public class CriarNovaTarefaActivity extends AppCompatActivity {
 
+public class CriarNovaTarefaActivity extends AppCompatActivity {
     private EditText titulo;
     private EditText descricao;
     private EditText dataLimite;
@@ -29,9 +30,10 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
 
     //Banco de Dados
     private Cursor cursor;
-    private ContentValues contentValues;
-    private SQLiteDatabase sqLiteDatabase;
-    private TarefaDBHelper tarefaDBHelper;
+    private ContentValues values;
+    private TarefaDBHelper helper;
+    private SQLiteDatabase db;
+    private Cursor c;
 
 
     @Override
@@ -46,9 +48,20 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
         estado = (RadioGroup) findViewById(R.id.estadoRadioGroup);
         criarTarefa = (Button) findViewById(R.id.confirmarNovaTarefaButton);
 
-        tarefaDBHelper = new TarefaDBHelper(getApplicationContext());
-        sqLiteDatabase = tarefaDBHelper.getWritableDatabase();
-        contentValues = new ContentValues();
+        dataLimite.addTextChangedListener(Mascara.insert("##/##/####", dataLimite));
+
+        helper = new TarefaDBHelper(getApplicationContext());
+        db = helper.getWritableDatabase();
+        values = new ContentValues();
+
+        String [] campos = {
+                TarefaContract.TarefaDados._ID,
+                TarefaContract.TarefaDados.COLUMN_TITULO,
+                TarefaContract.TarefaDados.COLUMN_DESCRICAO,
+                TarefaContract.TarefaDados.COLUMN_DIFICULDADE
+        };
+
+        c = db.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, null);
 
         criarTarefa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,14 +71,20 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     Bundle bundle = new Bundle();
 
-                    contentValues.put(TarefaContract.TarefaDados.COLUNM_TITULO,"jAO");//titulo.getText().toString());
-                    //contentValues.put(TarefaContract.TarefaDados.COLUNM_DESCRICAO,descricao.getText().toString());
-                    //contentValues.put(TarefaContract.TarefaDados.COLUMN_DIFICULDADE, (int) dificuldade.getRating());
-                    //contentValues.put(TarefaContract.TarefaDados.COLUMN_ESTADO, radioButton.getText().toString());
-                    long novoId = sqLiteDatabase.insert(TarefaContract.TarefaDados.TABLE_NAME, null, contentValues);
+                    String [] campos = {
+                            TarefaContract.TarefaDados._ID,
+                            TarefaContract.TarefaDados.COLUMN_TITULO,
+                            TarefaContract.TarefaDados.COLUMN_DESCRICAO,
+                            TarefaContract.TarefaDados.COLUMN_DIFICULDADE,
+                            TarefaContract.TarefaDados.COLUMN_ESTADO
+                    };
 
-
-                    Toast.makeText(CriarNovaTarefaActivity.this,"Novo id: " +novoId ,Toast.LENGTH_SHORT).show();
+                    values.put(TarefaContract.TarefaDados.COLUMN_TITULO,titulo.getText().toString());
+                    values.put(TarefaContract.TarefaDados.COLUMN_DESCRICAO,descricao.getText().toString());
+                    values.put(TarefaContract.TarefaDados.COLUMN_DIFICULDADE,(int) dificuldade.getRating());
+                    values.put(TarefaContract.TarefaDados.COLUMN_ESTADO, radioButton.getText().toString());
+                    long novoID = db.insert(TarefaContract.TarefaDados.TABLE_NAME,null,values);
+                    Toast.makeText(CriarNovaTarefaActivity.this,"Nova Tarefa criada com o id: " + novoID,Toast.LENGTH_SHORT).show();
 
 
                     bundle.putString("titulo",titulo.getText().toString());

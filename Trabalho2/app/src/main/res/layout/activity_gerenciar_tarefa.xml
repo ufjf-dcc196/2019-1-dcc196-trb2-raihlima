@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CriarNovaTarefaActivity">
+    tools:context=".GerenciarTarefaActivity">
 
     <TableLayout
         android:layout_width="0dp"
@@ -15,7 +14,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/confirmarNovaTarefaButton"
+        app:layout_constraintBottom_toTopOf="@+id/editarGerenciarTarefaButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -25,14 +24,14 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textView100"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:text="Título:" />
 
             <EditText
-                android:id="@+id/tituloTxtNovaTarefa"
+                android:id="@+id/tituloTxtGerenciarTarefa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="15"
@@ -45,19 +44,19 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView102"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:text="Descrição:" />
 
             <EditText
-                android:id="@+id/descricaoTxtNovaTarefa"
+                android:id="@+id/descricaoTxtGerenciarTarefa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="15"
                 android:ems="10"
-                android:inputType="textShortMessage|textLongMessage|textPersonName|textCapSentences" />
+                android:inputType="textLongMessage|textPersonName|textCapSentences" />
         </TableRow>
 
         <TableRow
@@ -65,14 +64,14 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/textView104"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:text="Data Limite:" />
 
             <EditText
-                android:id="@+id/dataLimteTxtNovaTarefa"
+                android:id="@+id/dataLimteTxtGerenciarTarefa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="15"
@@ -87,14 +86,14 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/textView103"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:text="DIficuldade:" />
 
             <RatingBar
-                android:id="@+id/ratingBar"
+                android:id="@+id/ratingBarGerenciarTarefa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:numStars="5"
@@ -106,7 +105,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/textView200"
@@ -116,35 +115,35 @@
                 android:text="Estado:" />
 
             <RadioGroup
-                android:id="@+id/estadoRadioGroup"
+                android:id="@+id/estadoRadioGroupGerenciarTarefa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="15"
-                android:checkedButton="@id/radioButton">
+                android:checkedButton="@id/radioButtonGerenciarTarefa">
 
                 <RadioButton
-                    android:id="@+id/radioButton"
+                    android:id="@+id/radioButtonGerenciarTarefa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="A fazer" />
 
                 <RadioButton
-                    android:id="@+id/radioButton2"
+                    android:id="@+id/radioButton2GerenciarTarefa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Em Execução" />
 
                 <RadioButton
-                    android:id="@+id/radioButton3"
+                    android:id="@+id/radioButton3GerenciarTarefa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Bloqueada" />
 
                 <RadioButton
-                    android:id="@+id/radioButton4"
+                    android:id="@+id/radioButton4GerenciarTarefa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -155,14 +154,28 @@
     </TableLayout>
 
     <Button
-        android:id="@+id/confirmarNovaTarefaButton"
+        android:id="@+id/excluirTarefaButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="confirmar"
+        android:text="Excluir Tarefa"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/editarGerenciarTarefaButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Editar Tarefa"
+        app:layout_constraintBottom_toTopOf="@+id/excluirTarefaButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

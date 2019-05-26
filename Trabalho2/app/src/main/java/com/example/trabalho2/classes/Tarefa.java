@@ -1,45 +1,28 @@
 package com.example.trabalho2.classes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Tarefa {
+    private long id;
     private String titulo;
-    private String descricao;
-    private int dificuldade;
-    private String dataLimite;
-    private String dataAtualizacao;
-    private String estado;
-    private List<String> tags;
+    private String autor;
+    private Integer ano;
 
-    public Tarefa() {
-        this.tags = new ArrayList<>();
+    public Tarefa(){
+
     }
 
-    public Tarefa(String titulo, String descricao, int dificuldade, String dataLimite, String dataAtualizacao, String estado) {
+    public Tarefa(long id, String titulo, String autor, Integer ano) {
+        this.id = id;
         this.titulo = titulo;
-        this.descricao = descricao;
-        this.dificuldade = dificuldade;
-        this.dataLimite = dataLimite;
-        this.dataAtualizacao = dataAtualizacao;
-        this.estado = estado;
-        this.tags = new ArrayList<>();
+        this.autor = autor;
+        this.ano = ano;
     }
 
-    public String getEstado() {
-        return estado;
+    public long getId() {
+        return id;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -50,39 +33,29 @@ public class Tarefa {
         this.titulo = titulo;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getAutor() {
+        return autor;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setAutor(String autor) {
+        this.autor = autor;
     }
 
-    public int getDificuldade() {
-        return dificuldade;
+    public Integer getAno() {
+        return ano;
     }
 
-    public void setDificuldade(int dificuldade) {
-        this.dificuldade = dificuldade;
+    public void setAno(Integer ano) {
+        this.ano = ano;
     }
 
-    public String getDataLimite() {
-        return dataLimite;
-    }
-
-    public void setDataLimite(String dataLimite) {
-        this.dataLimite = dataLimite;
-    }
-
-    public String getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(String dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-
-    public void addTag(String tag){
-        this.tags.add(tag);
+    @Override
+    public String toString() {
+        return "Tarefa{" +
+                "id=" + id +
+                ", titulo='" + titulo + '\'' +
+                ", autor='" + autor + '\'' +
+                ", ano=" + ano +
+                '}';
     }
 }
