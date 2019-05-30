@@ -2,24 +2,39 @@ package com.example.trabalho2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.trabalho2.classes.Mascara;
 import com.example.trabalho2.dados.TarefaContract;
 import com.example.trabalho2.dados.TarefaDBHelper;
+
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 
 public class GerenciarTarefaActivity extends AppCompatActivity {
 
@@ -36,6 +51,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     private RadioButton b4;
     private Button editar;
     private Button excluir;
+    private TextView atualizacao;
 
     //Banco de Dados
     private Cursor cursor;
@@ -47,6 +63,8 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     //Estado da Activity
     //True para Editar
     private boolean editavel = false;
+
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
 
     @Override
@@ -65,26 +83,43 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         b2 = (RadioButton) findViewById(R.id.radioButton2GerenciarTarefa);
         b3 = (RadioButton) findViewById(R.id.radioButton3GerenciarTarefa);
         b4 = (RadioButton) findViewById(R.id.radioButton4GerenciarTarefa);
+        atualizacao = (TextView) findViewById(R.id.ultimaAtualizacaoTxt);
 
-        dataLimite.addTextChangedListener(Mascara.insert("##/##/####", dataLimite));
+        //dataLimite.addTextChangedListener(Mascara.insert("##/##/####", dataLimite));
 
         helper = new TarefaDBHelper(getApplicationContext());
         db = helper.getWritableDatabase();
         values = new ContentValues();
 
-        String [] campos = {
-                TarefaContract.TarefaDados._ID,
-                TarefaContract.TarefaDados.COLUMN_TITULO,
-                TarefaContract.TarefaDados.COLUMN_DESCRICAO,
-                TarefaContract.TarefaDados.COLUMN_DIFICULDADE,
-                TarefaContract.TarefaDados.COLUMN_ESTADO
-        };
+        String [] campos = TarefaContract.TABELA_TAREFA;
 
         cursor = db.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, null);
 
-
         preencheDados(getIntent().getBundleExtra("info"));
         alteraEstado(false);
+
+        dataLimite.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus==true){
+                    Calendar calendar = Calendar.getInstance();
+                    int ano = calendar.get(Calendar.YEAR);
+                    int mes = calendar.get(Calendar.MONTH);
+                    int dia = calendar.get(Calendar.DAY_OF_MONTH);
+
+                    DatePickerDialog dateDialog= new DatePickerDialog(GerenciarTarefaActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener,ano,mes,dia);
+                    dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dateDialog.show();
+                }
+            }
+        });
+
+        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                dataLimite.setText(dayOfMonth+"/"+(month+1)+"/"+year);
+            }
+        };
 
         editar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,13 +191,28 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         b4.setEnabled(valor);
     }
 
+    //@RequiresApi(api = Build.VERSION_CODES.O)
     private void preencheDados(Bundle bundle){
         index = bundle.getInt("index");
         cursor.moveToPosition(index);
         titulo.setText(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_TITULO)));
         descricao.setText(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DESCRICAO)));
         dificuldade.setRating(this.cursor.getInt(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DIFICULDADE)));
-        String aux = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_ESTADO));
+
+        Timestamp ts = Timestamp.valueOf(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DATA_LIMITE)));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dataL = dateFormat.format(ts);
+        //String dataL  = (this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DATA_LIMITE)));
+
+        dataLimite.setText(dataL);
+
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss" );
+        ts = Timestamp.valueOf(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DATA_ATUALIZACAO)));
+        String dataA = dateFormat.format(ts);
+
+        atualizacao.setText("Ultima atualização: " + dataA);
+       String aux = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_ESTADO));
         if(aux.equals("A fazer")){
             estado.check(R.id.radioButtonGerenciarTarefa);
         } else if(aux.equals("Em Execução")){
@@ -193,9 +243,27 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         values.put(TarefaContract.TarefaDados.COLUMN_DESCRICAO,descricao.getText().toString());
         values.put(TarefaContract.TarefaDados.COLUMN_DIFICULDADE,(int) dificuldade.getRating());
         values.put(TarefaContract.TarefaDados.COLUMN_ESTADO, radioButton.getText().toString());
+        String inDate = dataLimite.getText().toString();
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Timestamp ts = new Timestamp(((java.util.Date)df.parse(inDate)).getTime());
+            values.put(TarefaContract.TarefaDados.COLUMN_DATA_LIMITE, ts.toString());
+
+        } catch (ParseException e) {
+            Timestamp dataDeHoje = new Timestamp(System.currentTimeMillis());
+            values.put(TarefaContract.TarefaDados.COLUMN_DATA_LIMITE, dataDeHoje.toString());
+        }
+
+        Timestamp dataDeHoje = new Timestamp(System.currentTimeMillis());
+        values.put(TarefaContract.TarefaDados.COLUMN_DATA_ATUALIZACAO, dataDeHoje.toString());
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss" );
+        String dataA = dateFormat.format(dataDeHoje);
+
+        atualizacao.setText("Ultima atualização: " + dataA);
 
         db.update(TarefaContract.TarefaDados.TABLE_NAME,values,where,null);
-        db.close();
+
+        //db.close();
     }
 
     private void removeRegistro(){

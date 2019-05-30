@@ -89,14 +89,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void preencheCursor(){
-        String [] campos = {
-                TarefaContract.TarefaDados._ID,
-                TarefaContract.TarefaDados.COLUMN_TITULO,
-                TarefaContract.TarefaDados.COLUMN_DESCRICAO,
-                TarefaContract.TarefaDados.COLUMN_DIFICULDADE,
-                TarefaContract.TarefaDados.COLUMN_ESTADO
-
-        };
+        String [] campos = TarefaContract.TABELA_TAREFA;
         c = db.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, null);
     }
 
