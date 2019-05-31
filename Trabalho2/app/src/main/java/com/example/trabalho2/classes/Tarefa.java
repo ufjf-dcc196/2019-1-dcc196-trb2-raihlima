@@ -3,18 +3,13 @@ package com.example.trabalho2.classes;
 public class Tarefa {
     private long id;
     private String titulo;
-    private String autor;
-    private Integer ano;
+    private String descricao;
+    private int dificuldade;
+    private String estado;
+    private String dataLimite;
+    private String dataAtualizacao;
 
-    public Tarefa(){
-
-    }
-
-    public Tarefa(long id, String titulo, String autor, Integer ano) {
-        this.id = id;
-        this.titulo = titulo;
-        this.autor = autor;
-        this.ano = ano;
+    public Tarefa() {
     }
 
     public long getId() {
@@ -33,29 +28,43 @@ public class Tarefa {
         this.titulo = titulo;
     }
 
-    public String getAutor() {
-        return autor;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public Integer getAno() {
-        return ano;
+    public int getDificuldade() {
+        return dificuldade;
     }
 
-    public void setAno(Integer ano) {
-        this.ano = ano;
+    public void setDificuldade(int dificuldade) {
+        this.dificuldade = dificuldade;
     }
 
-    @Override
-    public String toString() {
-        return "Tarefa{" +
-                "id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", autor='" + autor + '\'' +
-                ", ano=" + ano +
-                '}';
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getDataLimite() {
+        return dataLimite;
+    }
+
+    public void setDataLimite(String dataLimite) {
+        this.dataLimite = dataLimite;
+    }
+
+    public String getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public void setDataAtualizacao(String dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
     }
 }

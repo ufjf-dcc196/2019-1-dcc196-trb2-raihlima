@@ -1,4 +1,4 @@
-package com.example.trabalho2;
+package com.example.trabalho2.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,8 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,7 +22,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trabalho2.classes.Mascara;
+import com.example.trabalho2.R;
 import com.example.trabalho2.dados.TarefaContract;
 import com.example.trabalho2.dados.TarefaDBHelper;
 
@@ -32,13 +30,12 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
 
 public class GerenciarTarefaActivity extends AppCompatActivity {
 
     private int index;
+    private long id;
 
     private EditText titulo;
     private EditText descricao;
@@ -194,7 +191,15 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     //@RequiresApi(api = Build.VERSION_CODES.O)
     private void preencheDados(Bundle bundle){
         index = bundle.getInt("index");
-        cursor.moveToPosition(index);
+        id = bundle.getLong("id");
+        cursor.moveToFirst();
+        while(cursor.isAfterLast()==false){
+            if(cursor.getInt(cursor.getColumnIndex(TarefaContract.TarefaDados._ID))==id){
+                break;
+            }
+            cursor.moveToNext();
+        }
+        //cursor.moveToPosition(index);
         titulo.setText(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_TITULO)));
         descricao.setText(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DESCRICAO)));
         dificuldade.setRating(this.cursor.getInt(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DIFICULDADE)));

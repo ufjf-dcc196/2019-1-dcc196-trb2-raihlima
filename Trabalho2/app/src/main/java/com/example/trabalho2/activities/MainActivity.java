@@ -1,4 +1,4 @@
-package com.example.trabalho2;
+package com.example.trabalho2.activities;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -10,24 +10,22 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.Button;
-import android.widget.Toast;
 
+import com.example.trabalho2.R;
 import com.example.trabalho2.adapter.TarefaDadosAdapter;
-import com.example.trabalho2.classes.Tarefa;
 import com.example.trabalho2.dados.TarefaContract;
 import com.example.trabalho2.dados.TarefaDBHelper;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button b;
+    private Button criarNovaTarefa;
     private RecyclerView recyclerView;
-    private Cursor c;
+    private Cursor cursor;
     private ContentValues values;
     private TarefaDBHelper helper;
-    private SQLiteDatabase db;
+    private SQLiteDatabase dataBase;
     private TarefaDadosAdapter tarefaDadosAdapter;
 
     public static final int CRIAR_NOVA_TAREFA = 1;
@@ -39,20 +37,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        b = (Button) findViewById(R.id.button);
+        criarNovaTarefa = (Button) findViewById(R.id.button);
 
         helper = new TarefaDBHelper(getApplicationContext());
-        db = helper.getWritableDatabase();
+        dataBase = helper.getWritableDatabase();
         values = new ContentValues();
 
         preencheCursor();
 
         recyclerView = findViewById(R.id.rvTarefas);
-        tarefaDadosAdapter = new TarefaDadosAdapter(c);
+        tarefaDadosAdapter = new TarefaDadosAdapter(cursor);
         recyclerView.setAdapter(tarefaDadosAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        b.setOnClickListener(new View.OnClickListener() {
+        criarNovaTarefa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CriarNovaTarefaActivity.class);
@@ -67,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
             public void onTarefaDadosClick(View v, int position) {
                 Bundle bundle = new Bundle();
                 Intent intent = new Intent(MainActivity.this, GerenciarTarefaActivity.class);
-                bundle.putInt("index",position);
+                cursor.moveToPosition(position);
+                long index = cursor.getLong(cursor.getColumnIndex(TarefaContract.TarefaDados._ID));
+                bundle.putLong("id",index);
                 intent.putExtra("info",bundle);
                 startActivityForResult(intent, EXIBIR_TAREFA);
             }
@@ -90,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void preencheCursor(){
         String [] campos = TarefaContract.TABELA_TAREFA;
-        c = db.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, null);
+        cursor = dataBase.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, TarefaContract.TarefaDados.COLUMN_ESTADO + " ASC");
     }
 
     private void atualizaDados(){
         preencheCursor();
-        tarefaDadosAdapter.alteraDados(c);
+        tarefaDadosAdapter.alteraDados(cursor);
     }
 }
 

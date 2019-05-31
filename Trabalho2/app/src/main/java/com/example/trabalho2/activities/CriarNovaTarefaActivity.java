@@ -1,4 +1,4 @@
-package com.example.trabalho2;
+package com.example.trabalho2.activities;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -17,10 +17,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trabalho2.classes.Mascara;
+import com.example.trabalho2.R;
 import com.example.trabalho2.dados.TarefaContract;
 import com.example.trabalho2.dados.TarefaDBHelper;
 
