@@ -25,4 +25,24 @@ public final class TarefaContract {
         public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s INTEGER, %s TEXT, %s TIMESTAMP, %s TIMESTAMP)", TABLE_NAME, _ID, COLUMN_TITULO, COLUMN_DESCRICAO, COLUMN_DIFICULDADE, COLUMN_ESTADO, COLUMN_DATA_LIMITE, COLUMN_DATA_ATUALIZACAO);
         public static final String DROP_TABLE = String.format("DROP TABLE %s", TABLE_NAME);
     }
+
+    public final String TABELA_ETIQUETA[]={
+            EtiquetaDados._ID,
+            EtiquetaDados.COLUMN_NOME
+    };
+
+    public static final class EtiquetaDados implements BaseColumns {
+        public static final String TABLE_NAME = "etiqueta";
+        public static final String COLUMN_NOME = "nome";
+        public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT)", TABLE_NAME, _ID, COLUMN_NOME);
+        public static final String DROP_TABLE = String.format("DROP TABLE %s", TABLE_NAME);
+    }
+
+    public static final class TarefaEtiquetaDados implements BaseColumns{
+        public static final String TABLE_NAME = "tarefa_etiqueta";
+        public static final String COLUMN_ID_TAREFA = "id_tarefa";
+        public static final String COLUMN_ID_ETIQUETA = "id_etiqueta";
+        public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER, %s INTEGER, FOREIGN KEY(%s) REFERENCES %s(%s), FOREIGN KEY(%s) REFERENCES %s(%s))", TABLE_NAME, COLUMN_ID_TAREFA, COLUMN_ID_TAREFA, COLUMN_ID_TAREFA, TarefaDados.TABLE_NAME, TarefaDados._ID, COLUMN_ID_ETIQUETA, EtiquetaDados.TABLE_NAME, EtiquetaDados._ID);
+        public static final String DROP_TABLE = String.format("DROP TABLE %s", TABLE_NAME);
+    }
 }
