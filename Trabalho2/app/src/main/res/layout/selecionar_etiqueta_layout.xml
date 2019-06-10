@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingTop="20dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="20dp">
+    android:paddingLeft="0dp"
+    android:paddingTop="0dp"
+    android:paddingRight="0dp"
+    android:paddingBottom="8dp">
 
     <CheckBox
         android:id="@+id/checkBox"
@@ -13,4 +13,12 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="CheckBox" />
+
+    <TextView
+        android:id="@+id/txtPosicaoTeste"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView" />
+
 </LinearLayout>

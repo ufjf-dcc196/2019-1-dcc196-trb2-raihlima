@@ -1,5 +1,6 @@
 package com.example.trabalho2.adapter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -7,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.trabalho2.R;
@@ -17,7 +19,6 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
     private EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener listener;
 
     public EtiquetaCriarTarefaAdapter(){
-
     }
 
     public EtiquetaCriarTarefaAdapter(Cursor cursor) {
@@ -29,7 +30,7 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
         notifyDataSetChanged();
     }
 
-    public void setOnTarefaDadosClickListener(EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener listener){
+    public void setOnEtiquetaCriarTarefaClickListener(EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener listener){
         this.listener = listener;
     }
 
@@ -39,7 +40,7 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View linha = inflater.inflate(R.layout.tarefas_layout, viewGroup, false);
+        View linha = inflater.inflate(R.layout.selecionar_etiqueta_layout, viewGroup, false);
         EtiquetaCriarTarefaAdapter.ViewHolder vh = new EtiquetaCriarTarefaAdapter.ViewHolder(linha);
         return vh;
     }
@@ -47,13 +48,11 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
     @Override
     public void onBindViewHolder(@NonNull EtiquetaCriarTarefaAdapter.ViewHolder viewHolder, int index) {
         cursor.moveToPosition(index);
-        String titulo = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_TITULO));
-        String dificuldade = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DIFICULDADE));
-        String estado = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_ESTADO));
+        String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
+        String posicao = Integer.toString(index);
 
-        viewHolder.titulo.setText(titulo);
-        viewHolder.dificuldade.setText(dificuldade);
-        viewHolder.estado.setText(estado);
+        viewHolder.nomeEtiqueta.setText(nome);
+        viewHolder.posicao.setText(posicao);
     }
 
     @Override
@@ -62,15 +61,13 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView titulo;
-        TextView dificuldade;
-        TextView estado;
+        CheckBox nomeEtiqueta;
+        TextView posicao;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            titulo = (TextView) itemView.findViewById(R.id.tituloTxtTarefaLayout);
-            dificuldade = (TextView) itemView.findViewById(R.id.dificuldadeTxtTarefaLayout);
-            estado = (TextView) itemView.findViewById(R.id.estadoTxtTarefaLayout);
+            nomeEtiqueta = (CheckBox) itemView.findViewById(R.id.checkBox);
+            posicao = (TextView) itemView.findViewById(R.id.txtPosicaoTeste);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -90,6 +87,8 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
                 listener.onEtiquetaCriarTarefaClick(v,position);
             }
         }
+
+
     }
 
     public interface OnEtiquetaCriarTarefaClickListener {

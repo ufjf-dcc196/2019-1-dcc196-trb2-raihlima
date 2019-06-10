@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -20,6 +22,8 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.example.trabalho2.R;
+import com.example.trabalho2.adapter.EtiquetaCriarTarefaAdapter;
+import com.example.trabalho2.adapter.TarefaDadosAdapter;
 import com.example.trabalho2.dados.TarefaContract;
 import com.example.trabalho2.dados.TarefaDBHelper;
 
@@ -37,13 +41,15 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
     private RatingBar dificuldade;
     private RadioGroup estado;
     private Button criarTarefa;
+    private RecyclerView recyclerView;
+    private EtiquetaCriarTarefaAdapter etiquetaCriarTarefaAdapter;
 
     //Banco de Dados
     private Cursor cursor;
     private ContentValues values;
     private TarefaDBHelper helper;
     private SQLiteDatabase db;
-    private Cursor c;
+    private Cursor cursorEtiqueta;
 
     private DatePickerDialog.OnDateSetListener mDateSetListener;
 
@@ -67,7 +73,22 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
 
         String [] campos = TarefaContract.TABELA_TAREFA;
 
-        c = db.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, null);
+        cursor = db.query(TarefaContract.TarefaDados.TABLE_NAME, campos, null, null, null,null, null);
+        cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
+
+
+        if(cursorEtiqueta.getCount()==0){
+            ContentValues values = new ContentValues();
+            values.put(TarefaContract.EtiquetaDados.COLUMN_NOME,"Nova Etiqueta");
+            db.insert(TarefaContract.EtiquetaDados.TABLE_NAME,null,values);
+            cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
+        }
+
+        recyclerView = findViewById(R.id.rvSelecionarEtiqueta);
+        etiquetaCriarTarefaAdapter = new EtiquetaCriarTarefaAdapter(cursorEtiqueta);
+        recyclerView.setAdapter(etiquetaCriarTarefaAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
 
         dataLimite.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -141,6 +162,16 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Toast.makeText(CriarNovaTarefaActivity.this, "Preencha todos os dados!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        etiquetaCriarTarefaAdapter.setOnEtiquetaCriarTarefaClickListener(new EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener() {
+            @Override
+            public void onEtiquetaCriarTarefaClick(View v, int position) {
+                Toast.makeText(CriarNovaTarefaActivity.this, "Teste", Toast.LENGTH_SHORT).show();
+                if(position==(etiquetaCriarTarefaAdapter.getItemCount()-1)){
+                    Toast.makeText(CriarNovaTarefaActivity.this, "TEste", Toast.LENGTH_SHORT).show();
                 }
             }
         });

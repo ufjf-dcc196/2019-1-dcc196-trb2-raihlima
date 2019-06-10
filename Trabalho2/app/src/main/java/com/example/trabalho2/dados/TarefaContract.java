@@ -23,10 +23,10 @@ public final class TarefaContract {
         public static final String COLUMN_DATA_LIMITE = "data_limite";
         public static final String COLUMN_DATA_ATUALIZACAO = "data_atualizacao";
         public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s INTEGER, %s TEXT, %s TIMESTAMP, %s TIMESTAMP)", TABLE_NAME, _ID, COLUMN_TITULO, COLUMN_DESCRICAO, COLUMN_DIFICULDADE, COLUMN_ESTADO, COLUMN_DATA_LIMITE, COLUMN_DATA_ATUALIZACAO);
-        public static final String DROP_TABLE = String.format("DROP TABLE %s", TABLE_NAME);
+        public static final String DROP_TABLE = String.format("DROP TABLE IF EXISTS %s", TABLE_NAME);
     }
 
-    public final String TABELA_ETIQUETA[]={
+    public static final String[] TABELA_ETIQUETA ={
             EtiquetaDados._ID,
             EtiquetaDados.COLUMN_NOME
     };
@@ -35,7 +35,7 @@ public final class TarefaContract {
         public static final String TABLE_NAME = "etiqueta";
         public static final String COLUMN_NOME = "nome";
         public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT)", TABLE_NAME, _ID, COLUMN_NOME);
-        public static final String DROP_TABLE = String.format("DROP TABLE %s", TABLE_NAME);
+        public static final String DROP_TABLE = String.format("DROP TABLE IF EXISTS %s", TABLE_NAME);
     }
 
     public static final class TarefaEtiquetaDados implements BaseColumns{
