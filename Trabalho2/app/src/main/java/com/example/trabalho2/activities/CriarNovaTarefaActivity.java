@@ -1,8 +1,10 @@
 package com.example.trabalho2.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -89,20 +91,18 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
         recyclerView.setAdapter(etiquetaCriarTarefaAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        dataLimite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gerarCalendario();
+            }
+        });
 
         dataLimite.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus==true){
-                    Calendar calendar = Calendar.getInstance();
-                    int ano = calendar.get(Calendar.YEAR);
-                    int mes = calendar.get(Calendar.MONTH);
-                    int dia = calendar.get(Calendar.DAY_OF_MONTH);
-
-                    DatePickerDialog dateDialog= new DatePickerDialog(CriarNovaTarefaActivity.this,
-                            android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener,ano,mes,dia);
-                    dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dateDialog.show();
+                    gerarCalendario();
                 }
             }
         });
@@ -169,15 +169,51 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
         etiquetaCriarTarefaAdapter.setOnEtiquetaCriarTarefaClickListener(new EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener() {
             @Override
             public void onEtiquetaCriarTarefaClick(View v, int position) {
-                Toast.makeText(CriarNovaTarefaActivity.this, "Teste", Toast.LENGTH_SHORT).show();
                 if(position==(etiquetaCriarTarefaAdapter.getItemCount()-1)){
-                    Toast.makeText(CriarNovaTarefaActivity.this, "TEste", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(CriarNovaTarefaActivity.this, "Teste Click Curto", Toast.LENGTH_SHORT).show();
+
+                    //Dialogo de Nova etiqueta
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CriarNovaTarefaActivity.this);
+                    View viewBuilder = getLayoutInflater().inflate(R.layout.nova_etiqueta_dialog_layout,null);
+                    EditText nomeEtiqueta = (EditText) viewBuilder.findViewById(R.id.editNovaEtiqueta);
+                    builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(CriarNovaTarefaActivity.this,"Etiqueta Criada", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.setTitle("Criar nova Etiqueta");
+                    builder.setView(viewBuilder);
+                    builder.show();
                 }
+            }
+
+            @Override
+            public void onEtiquetaCriarTarefaLongClick(View v, int position) {
+                Toast.makeText(CriarNovaTarefaActivity.this, "Teste Long Click", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public boolean verificaPreenchimento(){
+    private void gerarCalendario(){
+        Calendar calendar = Calendar.getInstance();
+        int ano = calendar.get(Calendar.YEAR);
+        int mes = calendar.get(Calendar.MONTH);
+        int dia = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dateDialog= new DatePickerDialog(CriarNovaTarefaActivity.this,
+                android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener,ano,mes,dia);
+        dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dateDialog.show();
+    }
+
+    private boolean verificaPreenchimento(){
         if(titulo.getText().toString().equals("")){
             return false;
         } else if(descricao.getText().toString().equals("")){

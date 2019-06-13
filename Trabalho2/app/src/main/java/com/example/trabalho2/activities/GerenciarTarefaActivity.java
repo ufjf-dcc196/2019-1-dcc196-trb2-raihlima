@@ -95,18 +95,18 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         preencheDados(getIntent().getBundleExtra("info"));
         alteraEstado(false);
 
+        dataLimite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gerarCalendario();
+            }
+        });
+
         dataLimite.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus==true){
-                    Calendar calendar = Calendar.getInstance();
-                    int ano = calendar.get(Calendar.YEAR);
-                    int mes = calendar.get(Calendar.MONTH);
-                    int dia = calendar.get(Calendar.DAY_OF_MONTH);
-
-                    DatePickerDialog dateDialog= new DatePickerDialog(GerenciarTarefaActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener,ano,mes,dia);
-                    dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dateDialog.show();
+                    gerarCalendario();
                 }
             }
         });
@@ -127,6 +127,8 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                     alteraNomeBotoes();
                     alteraRegistro();
                     Toast.makeText(GerenciarTarefaActivity.this,"Tarefa Alterada",Toast.LENGTH_SHORT).show();
+                    setResult(Activity.RESULT_OK, new Intent());
+                    finish();
                 } else {
                     alteraEstado(true);
                     editavel=true;
@@ -152,6 +154,17 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void gerarCalendario(){
+        Calendar calendar = Calendar.getInstance();
+        int ano = calendar.get(Calendar.YEAR);
+        int mes = calendar.get(Calendar.MONTH);
+        int dia = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dateDialog= new DatePickerDialog(GerenciarTarefaActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener,ano,mes,dia);
+        dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dateDialog.show();
     }
 
     public void exibirAlertaExclusao(){
