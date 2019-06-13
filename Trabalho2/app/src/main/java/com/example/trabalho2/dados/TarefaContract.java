@@ -38,11 +38,16 @@ public final class TarefaContract {
         public static final String DROP_TABLE = String.format("DROP TABLE IF EXISTS %s", TABLE_NAME);
     }
 
+    public static final String[] TABELA_TAREFA_ETIQUETA ={
+            TarefaEtiquetaDados.COLUMN_ID_TAREFA,
+            TarefaEtiquetaDados.COLUMN_ID_ETIQUETA,
+    };
+
     public static final class TarefaEtiquetaDados implements BaseColumns{
         public static final String TABLE_NAME = "tarefa_etiqueta";
         public static final String COLUMN_ID_TAREFA = "id_tarefa";
         public static final String COLUMN_ID_ETIQUETA = "id_etiqueta";
-        public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER, %s INTEGER, FOREIGN KEY(%s) REFERENCES %s(%s), FOREIGN KEY(%s) REFERENCES %s(%s))", TABLE_NAME, COLUMN_ID_TAREFA, COLUMN_ID_TAREFA, COLUMN_ID_TAREFA, TarefaDados.TABLE_NAME, TarefaDados._ID, COLUMN_ID_ETIQUETA, EtiquetaDados.TABLE_NAME, EtiquetaDados._ID);
-        public static final String DROP_TABLE = String.format("DROP TABLE %s", TABLE_NAME);
+        public static final String CREATE_TABLE = String.format("CREATE TABLE %s (%s INTEGER, %s INTEGER, FOREIGN KEY(%s) REFERENCES %s(%s), FOREIGN KEY(%s) REFERENCES %s(%s))", TABLE_NAME, COLUMN_ID_TAREFA, COLUMN_ID_ETIQUETA, COLUMN_ID_TAREFA, TarefaDados.TABLE_NAME, TarefaDados._ID, COLUMN_ID_ETIQUETA, EtiquetaDados.TABLE_NAME, EtiquetaDados._ID);
+        public static final String DROP_TABLE = String.format("DROP TABLE IF EXISTS %s", TABLE_NAME);
     }
 }

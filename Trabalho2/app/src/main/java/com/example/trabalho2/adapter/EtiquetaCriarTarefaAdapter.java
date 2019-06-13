@@ -49,7 +49,7 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
     public void onBindViewHolder(@NonNull EtiquetaCriarTarefaAdapter.ViewHolder viewHolder, int index) {
         cursor.moveToPosition(index);
         String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
-
+        viewHolder.id = cursor.getLong(cursor.getColumnIndex(TarefaContract.TarefaDados._ID));
         viewHolder.nomeEtiqueta.setText(nome);
     }
 
@@ -61,6 +61,11 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         protected CheckBox nomeEtiqueta;
         protected TextView posicao;
+        private long id;
+
+        public long getId(){
+            return this.id;
+        }
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,7 +77,7 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
                     int position = getAdapterPosition();
                     if (listener != null) {
                         alteraEstado();
-                        listener.onEtiquetaCriarTarefaClick(v, position);
+                        listener.onEtiquetaCriarTarefaClick(v, position, id);
                     }
                 }
             });
@@ -81,8 +86,7 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
                 public boolean onLongClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null) {
-
-                        listener.onEtiquetaCriarTarefaLongClick(v, position);
+                        listener.onEtiquetaCriarTarefaLongClick(v, position, id);
                     }
                     return true;
                 }
@@ -93,7 +97,6 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
         public void onClick(View v) {
             int position = getAdapterPosition();
             if(position!=RecyclerView.NO_POSITION){
-
                 listener.onEtiquetaCriarTarefaClick(v,position);
             }
         }
@@ -121,6 +124,8 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
 
     public interface OnEtiquetaCriarTarefaClickListener {
         public void onEtiquetaCriarTarefaClick(View v, int position);
+        public void onEtiquetaCriarTarefaClick(View v, int position, long id);
         public void onEtiquetaCriarTarefaLongClick (View v, int position);
+        public void onEtiquetaCriarTarefaLongClick (View v, int position, long id);
     }
 }

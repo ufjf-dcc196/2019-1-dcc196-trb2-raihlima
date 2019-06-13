@@ -22,7 +22,8 @@
             android:id="@+id/searchTeste"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:queryHint="Buscar Taraefas por Etiqueta" />
+            android:inputType="textCapSentences"
+            android:queryHint="Buscar Tarefas por Etiqueta" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
