@@ -16,6 +16,7 @@ import com.example.trabalho2.dados.TarefaContract;
 
 public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCriarTarefaAdapter.ViewHolder>{
     private Cursor cursor;
+    private Cursor cursorPreenchido;
     private EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener listener;
 
     public EtiquetaCriarTarefaAdapter(){
@@ -23,6 +24,12 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
 
     public EtiquetaCriarTarefaAdapter(Cursor cursor) {
         this.cursor = cursor;
+        this.cursorPreenchido=null;
+    }
+
+    public EtiquetaCriarTarefaAdapter(Cursor cursor, Cursor cursorPreenchido) {
+        this.cursor = cursor;
+        this.cursorPreenchido = cursorPreenchido;
     }
 
     public void alteraDados(Cursor cursor){
@@ -47,10 +54,26 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
 
     @Override
     public void onBindViewHolder(@NonNull EtiquetaCriarTarefaAdapter.ViewHolder viewHolder, int index) {
-        cursor.moveToPosition(index);
-        String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
-        viewHolder.id = cursor.getLong(cursor.getColumnIndex(TarefaContract.TarefaDados._ID));
-        viewHolder.nomeEtiqueta.setText(nome);
+        if(this.cursorPreenchido==null) {
+            cursor.moveToPosition(index);
+            String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
+            viewHolder.id = cursor.getLong(cursor.getColumnIndex(TarefaContract.TarefaDados._ID));
+            viewHolder.nomeEtiqueta.setText(nome);
+        } else {
+            cursor.moveToPosition(index);
+            String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
+            viewHolder.id = cursor.getLong(cursor.getColumnIndex(TarefaContract.TarefaDados._ID));
+            viewHolder.nomeEtiqueta.setText(nome);
+            //viewHolder.nomeEtiqueta.setEnabled(false);
+            cursorPreenchido.moveToFirst();
+            for(int i=0;i<cursorPreenchido.getCount();i++){
+                if(cursor.getLong(cursor.getColumnIndex(TarefaContract.EtiquetaDados._ID))==cursorPreenchido.getLong(cursorPreenchido.getColumnIndex(TarefaContract.EtiquetaDados._ID))){
+                    viewHolder.nomeEtiqueta.setChecked(true);
+
+                }
+                cursorPreenchido.moveToNext();
+            }
+        }
     }
 
     @Override
@@ -118,7 +141,6 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
             } else {
                 nomeEtiqueta.setChecked(false);
             }
-
         }
     }
 

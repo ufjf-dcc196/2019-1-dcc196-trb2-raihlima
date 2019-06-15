@@ -56,7 +56,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     private RecyclerView recyclerViewEtiquetas;
     private EtiquetaCriarTarefaAdapter etiquetaCriarTarefaAdapter;
     private ArrayList<Long> idEtiquetas;
-
+    private ArrayList<Long> idEtiquetasInicio;
     //Banco de Dados
     private Cursor cursor;
     private ContentValues values;
@@ -64,6 +64,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     private SQLiteDatabase db;
     private Cursor c;
     private Cursor cursorEtiqueta;
+    private Cursor cursorPreencherEtiqueta;
 
     //Estado da Activity
     //True para Editar
@@ -90,7 +91,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         b4 = (RadioButton) findViewById(R.id.radioButton4GerenciarTarefa);
         atualizacao = (TextView) findViewById(R.id.ultimaAtualizacaoTxt);
         idEtiquetas = new ArrayList<>();
-
+        idEtiquetasInicio = new ArrayList<>();
 
         //dataLimite.addTextChangedListener(Mascara.insert("##/##/####", dataLimite));
 
@@ -104,12 +105,17 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
 
         preencheDados(getIntent().getBundleExtra("info"));
+        preencheCheckBox();
+        preencheIdEtiqueta();
         alteraEstado(false);
 
         recyclerViewEtiquetas = findViewById(R.id.rvEtiquetaGerenciar);
-        etiquetaCriarTarefaAdapter = new EtiquetaCriarTarefaAdapter(cursorEtiqueta);
+        etiquetaCriarTarefaAdapter = new EtiquetaCriarTarefaAdapter(cursorEtiqueta, cursorPreencherEtiqueta);
         recyclerViewEtiquetas.setAdapter(etiquetaCriarTarefaAdapter);
         recyclerViewEtiquetas.setLayoutManager(new LinearLayoutManager(this));
+
+
+
 
         dataLimite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,13 +144,18 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(editavel){
-                    alteraEstado(false);
-                    editavel=false;
-                    alteraNomeBotoes();
-                    alteraRegistro();
-                    Toast.makeText(GerenciarTarefaActivity.this,"Tarefa Alterada",Toast.LENGTH_SHORT).show();
-                    setResult(Activity.RESULT_OK, new Intent());
-                    finish();
+                    if(verificaPreenchimento()){
+                        alteraEstado(false);
+                        editavel=false;
+                        alteraNomeBotoes();
+                        alteraRegistro();
+                        Toast.makeText(GerenciarTarefaActivity.this,"Tarefa Alterada",Toast.LENGTH_SHORT).show();
+                        setResult(Activity.RESULT_OK, new Intent());
+                        finish();
+                    } else {
+                        Toast.makeText(GerenciarTarefaActivity.this, "Preencha todos os dados!", Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
                     alteraEstado(true);
                     editavel=true;
@@ -178,8 +189,8 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onEtiquetaCriarTarefaClick(View v, int position, final long id) {
-                gerenciaIdEtiqueta(id);
+            public void onEtiquetaCriarTarefaClick(View v, int position, final long idEtiqueta) {
+                gerenciaIdEtiqueta(idEtiqueta);
 
                 if(position==(etiquetaCriarTarefaAdapter.getItemCount()-1)){
                     //Toast.makeText(CriarNovaTarefaActivity.this, "Teste Click Curto", Toast.LENGTH_SHORT).show();
@@ -191,7 +202,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                     builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String where = "_ID = " + id;
+                            String where = "_ID = " + idEtiqueta;
                             ContentValues valuesEtiqueta = new ContentValues();
                             valuesEtiqueta.put(TarefaContract.EtiquetaDados.COLUMN_NOME,nomeEtiqueta.getText().toString());
                             db.update(TarefaContract.EtiquetaDados.TABLE_NAME,valuesEtiqueta,where,null);
@@ -222,7 +233,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onEtiquetaCriarTarefaLongClick(View v, int position, final long id) {
+            public void onEtiquetaCriarTarefaLongClick(View v, int position, final long idEtiqueta) {
                 if (position < (etiquetaCriarTarefaAdapter.getItemCount() - 1)) {
                     AlertDialog.Builder mensagem = new AlertDialog.Builder(GerenciarTarefaActivity.this);
                     mensagem.setTitle("Alerta");
@@ -230,7 +241,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                     mensagem.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            removeRegistro(id);
+                            removeRegistro(idEtiqueta);
                             Toast.makeText(GerenciarTarefaActivity.this, "Etiqueta excluida", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -247,32 +258,43 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     }
 
     private void preencheCheckBox(){
-        
+        String where = String.format("SELECT DISTINCT e.* FROM %s as e, %s as te WHERE te.%s = %s AND te.%s = e.%s", TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TarefaEtiquetaDados.TABLE_NAME, TarefaContract.TarefaEtiquetaDados.COLUMN_ID_TAREFA, id, TarefaContract.TarefaEtiquetaDados.COLUMN_ID_ETIQUETA, TarefaContract.EtiquetaDados._ID);
+        cursorPreencherEtiqueta = db.rawQuery(where,null);
     }
 
-    private void removeRegistro(long id){
+    private void removeRegistro(long idEtiqueta){
         cursorEtiqueta.moveToFirst();
         while(cursorEtiqueta.isAfterLast()==false){
-            if(cursorEtiqueta.getLong(cursorEtiqueta.getColumnIndex(TarefaContract.TarefaDados._ID))==id){
+            if(cursorEtiqueta.getLong(cursorEtiqueta.getColumnIndex(TarefaContract.TarefaDados._ID))==idEtiqueta){
                 break;
             }
             cursorEtiqueta.moveToNext();
         }
         String where = "_ID" + "=" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+        String where2 = "id_etiqueta" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
         db.delete(TarefaContract.EtiquetaDados.TABLE_NAME,where,null);
+        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME, where2,null);
         cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
         etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
+    }
 
+    private void preencheIdEtiqueta(){
+        cursorPreencherEtiqueta.moveToFirst();
+        for(int i=0;i<cursorPreencherEtiqueta.getCount();i++){
+            idEtiquetas.add(cursorPreencherEtiqueta.getLong(cursorPreencherEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+            idEtiquetasInicio.add(cursorPreencherEtiqueta.getLong(cursorPreencherEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+            cursorPreencherEtiqueta.moveToNext(); ///data/user/0/com.example.trabalho2/databases/Tarefas.db
+        }
     }
 
     private void gerenciaIdEtiqueta(long id){
         for(int i=0;i<idEtiquetas.size();i++){
             if(idEtiquetas.get(i)==id){
-                idEtiquetas.remove(i);
+                idEtiquetas.remove(i);///data/user/0/com.example.trabalho2/databases/Tarefas.db
                 return;
             }
         }
-        idEtiquetas.add(id);
+       idEtiquetas.add(id);
     }
 
     private void gerarCalendario(){
@@ -318,15 +340,15 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         b2.setEnabled(valor);
         b3.setEnabled(valor);
         b4.setEnabled(valor);
+        //recyclerViewEtiquetas.setEnabled(valor);
     }
 
-    //@RequiresApi(api = Build.VERSION_CODES.O)
     private void preencheDados(Bundle bundle){
         index = bundle.getInt("index");
-        id = bundle.getLong("id");
+        this.id = bundle.getLong("id");
         cursor.moveToFirst();
         while(cursor.isAfterLast()==false){
-            if(cursor.getInt(cursor.getColumnIndex(TarefaContract.TarefaDados._ID))==id){
+            if(cursor.getInt(cursor.getColumnIndex(TarefaContract.TarefaDados._ID))==this.id){
                 break;
             }
             cursor.moveToNext();
@@ -349,7 +371,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         String dataA = dateFormat.format(ts);
 
         atualizacao.setText("Ultima atualização: " + dataA);
-       String aux = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_ESTADO));
+        String aux = this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_ESTADO));
         if(aux.equals("A fazer")){
             estado.check(R.id.radioButtonGerenciarTarefa);
         } else if(aux.equals("Em Execução")){
@@ -400,12 +422,55 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
 
         db.update(TarefaContract.TarefaDados.TABLE_NAME,values,where,null);
 
+        removeEtiqueta();
+
+        ContentValues tarefaEtiquetaValues;
+        Cursor naoRepetir;
+        String condicao;
+        for(int i=0;i<idEtiquetas.size();i++){
+            long idTarefa = this.id;
+            condicao ="SELECT te.* FROM " + TarefaContract.TarefaEtiquetaDados.TABLE_NAME + " as te WHERE id_tarefa= "+ idTarefa + " AND id_etiqueta = " + idEtiquetas.get(i) + ";";
+            naoRepetir = db.rawQuery(condicao,null);
+            if(naoRepetir.getCount()==0){
+                tarefaEtiquetaValues = new ContentValues();
+                tarefaEtiquetaValues.put(TarefaContract.TarefaEtiquetaDados.COLUMN_ID_TAREFA,idTarefa);
+                tarefaEtiquetaValues.put(TarefaContract.TarefaEtiquetaDados.COLUMN_ID_ETIQUETA,idEtiquetas.get(i));
+                db.insert(TarefaContract.TarefaEtiquetaDados.TABLE_NAME,null, tarefaEtiquetaValues);
+           }
+
+        }
         //db.close();
     }
 
+    //Remove a etiqueta se a tarefa estiver usando
+    private void removeEtiqueta(){
+        String where = "id_tarefa = " + cursor.getString((cursor.getColumnIndex(TarefaContract.TarefaDados._ID)));
+        for(int i=0;i<idEtiquetas.size();i++){
+            where = where + " AND id_etiqueta != " + idEtiquetas.get(i);
+        }
+        where = where + ";";
+        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME,where,null);
+    }
+
     private void removeRegistro(){
-        String where = "_ID" + "=" + cursor.getString((cursor.getColumnIndex(TarefaContract.TarefaDados._ID)));
+        String where = "id_tarefa =" + cursor.getString((cursor.getColumnIndex(TarefaContract.TarefaDados._ID)));
+        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME,where,null);
+        where = "_ID" + "=" + cursor.getString((cursor.getColumnIndex(TarefaContract.TarefaDados._ID)));
         db.delete(TarefaContract.TarefaDados.TABLE_NAME,where,null);
+
         db.close();
+    }
+
+    private boolean verificaPreenchimento(){
+        if(titulo.getText().toString().equals("")){
+            return false;
+        } else if(descricao.getText().toString().equals("")){
+            return false;
+        } else if(dataLimite.getText().toString().equals("")){
+            return false;
+        } else if(idEtiquetas.size()==0){
+            return false;
+        }
+        return true;
     }
 }

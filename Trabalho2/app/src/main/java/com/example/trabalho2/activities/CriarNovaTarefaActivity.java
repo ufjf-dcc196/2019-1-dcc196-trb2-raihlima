@@ -261,7 +261,9 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
             cursorEtiqueta.moveToNext();
         }
         String where = "_ID" + "=" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+        String where2 = "id_etiqueta" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
         db.delete(TarefaContract.EtiquetaDados.TABLE_NAME,where,null);
+        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME, where2,null);
         cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
         etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
 
