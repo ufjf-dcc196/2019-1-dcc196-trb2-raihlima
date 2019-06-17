@@ -77,6 +77,8 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gerenciar_tarefa);
+        setTitle("Gerenciar Tarefa");
+
 
         titulo = (EditText) findViewById(R.id.tituloTxtGerenciarTarefa);
         descricao = (EditText) findViewById(R.id.descricaoTxtGerenciarTarefa);
@@ -145,6 +147,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(editavel){
                     if(verificaPreenchimento()){
+                        setTitle("Gerenciar Tarefa");
                         alteraEstado(false);
                         editavel=false;
                         alteraNomeBotoes();
@@ -157,6 +160,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                     }
 
                 } else {
+                    setTitle("Editar Tarefa");
                     alteraEstado(true);
                     editavel=true;
                     alteraNomeBotoes();
@@ -168,6 +172,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(editavel){
+                    setTitle("Gerenciar Tarefa");
                     alteraEstado(false);
                     editavel=false;
                     alteraNomeBotoes();

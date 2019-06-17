@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setTitle("Lista de Tarefas");
         criarNovaTarefa = (Button) findViewById(R.id.button);
 
         helper = new TarefaDBHelper(getApplicationContext());

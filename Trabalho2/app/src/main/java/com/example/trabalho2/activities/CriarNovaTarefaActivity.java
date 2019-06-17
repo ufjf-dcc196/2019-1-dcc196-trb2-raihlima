@@ -64,6 +64,8 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_criar_nova_tarefa);
 
+        setTitle("Cadastrar Nova Tarefa");
+
         titulo = (EditText) findViewById(R.id.tituloTxtNovaTarefa);
         descricao = (EditText) findViewById(R.id.descricaoTxtNovaTarefa);
         dataLimite = (EditText) findViewById(R.id.dataLimteTxtNovaTarefa);
