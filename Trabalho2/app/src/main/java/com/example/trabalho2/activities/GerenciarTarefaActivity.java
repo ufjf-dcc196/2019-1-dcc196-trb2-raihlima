@@ -371,7 +371,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
 
         dataLimite.setText(dataL);
 
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss" );
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss" );
         ts = Timestamp.valueOf(this.cursor.getString(cursor.getColumnIndex(TarefaContract.TarefaDados.COLUMN_DATA_ATUALIZACAO)));
         String dataA = dateFormat.format(ts);
 
