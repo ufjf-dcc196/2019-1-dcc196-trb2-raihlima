@@ -209,6 +209,7 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
                             db.insert(TarefaContract.EtiquetaDados.TABLE_NAME,null,valuesEtiqueta);
                             cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
                             etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
+                            etiquetaCriarTarefaAdapter.setIdEtiquetasMarcadas(idEtiquetas);
                             Toast.makeText(CriarNovaTarefaActivity.this,"Etiqueta Criada", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -238,6 +239,7 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
                     mensagem.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            gerenciaIdEtiqueta(id);
                             removeRegistro(id);
                             Toast.makeText(CriarNovaTarefaActivity.this, "Etiqueta excluida", Toast.LENGTH_SHORT).show();
                         }
@@ -255,20 +257,15 @@ public class CriarNovaTarefaActivity extends AppCompatActivity {
     }
 
     private void removeRegistro(long id){
-        cursorEtiqueta.moveToFirst();
-        while(cursorEtiqueta.isAfterLast()==false){
-            if(cursorEtiqueta.getLong(cursorEtiqueta.getColumnIndex(TarefaContract.TarefaDados._ID))==id){
-                break;
-            }
-            cursorEtiqueta.moveToNext();
-        }
-        String where = "_ID" + "=" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
-        String where2 = "id_etiqueta" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+        String where = TarefaContract.EtiquetaDados._ID + "=" + id;
         db.delete(TarefaContract.EtiquetaDados.TABLE_NAME,where,null);
-        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME, where2,null);
+
+        where = TarefaContract.TarefaEtiquetaDados.COLUMN_ID_ETIQUETA + " = " + id;
+        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME,where,null);
+
         cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
         etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
-
+        etiquetaCriarTarefaAdapter.setIdEtiquetasMarcadas(idEtiquetas);
     }
 
     private void gerenciaIdEtiqueta(long id){

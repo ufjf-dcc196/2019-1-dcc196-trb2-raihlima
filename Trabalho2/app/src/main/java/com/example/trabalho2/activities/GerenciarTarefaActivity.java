@@ -113,6 +113,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
 
         recyclerViewEtiquetas = findViewById(R.id.rvEtiquetaGerenciar);
         etiquetaCriarTarefaAdapter = new EtiquetaCriarTarefaAdapter(cursorEtiqueta, cursorPreencherEtiqueta);
+        etiquetaCriarTarefaAdapter.setBloqueio(true);
         recyclerViewEtiquetas.setAdapter(etiquetaCriarTarefaAdapter);
         recyclerViewEtiquetas.setLayoutManager(new LinearLayoutManager(this));
 
@@ -148,6 +149,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                 if(editavel){
                     if(verificaPreenchimento()){
                         setTitle("Gerenciar Tarefa");
+                        etiquetaCriarTarefaAdapter.setBloqueio(true);
                         alteraEstado(false);
                         editavel=false;
                         alteraNomeBotoes();
@@ -160,6 +162,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                     }
 
                 } else {
+                    etiquetaCriarTarefaAdapter.setBloqueio(false);
                     setTitle("Editar Tarefa");
                     alteraEstado(true);
                     editavel=true;
@@ -178,6 +181,7 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
                     alteraNomeBotoes();
                 } else {
                     exibirAlertaExclusao();
+                    etiquetaCriarTarefaAdapter.setBloqueio(false);
                     /*
                     removeRegistro();
                     setResult(Activity.RESULT_OK, new Intent());
@@ -195,43 +199,45 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
 
             @Override
             public void onEtiquetaCriarTarefaClick(View v, int position, final long idEtiqueta) {
-                gerenciaIdEtiqueta(idEtiqueta);
+                if (editavel) {
+                    gerenciaIdEtiqueta(idEtiqueta);
 
-                if(position==(etiquetaCriarTarefaAdapter.getItemCount()-1)){
-                    //Toast.makeText(CriarNovaTarefaActivity.this, "Teste Click Curto", Toast.LENGTH_SHORT).show();
+                    if (position == (etiquetaCriarTarefaAdapter.getItemCount() - 1)) {
+                        //Toast.makeText(CriarNovaTarefaActivity.this, "Teste Click Curto", Toast.LENGTH_SHORT).show();
 
-                    //Dialogo de Nova etiqueta
-                    AlertDialog.Builder builder = new AlertDialog.Builder(GerenciarTarefaActivity.this);
-                    View viewBuilder = getLayoutInflater().inflate(R.layout.nova_etiqueta_dialog_layout,null);
-                    final EditText nomeEtiqueta = (EditText) viewBuilder.findViewById(R.id.editNovaEtiqueta);
-                    builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String where = "_ID = " + idEtiqueta;
-                            ContentValues valuesEtiqueta = new ContentValues();
-                            valuesEtiqueta.put(TarefaContract.EtiquetaDados.COLUMN_NOME,nomeEtiqueta.getText().toString());
-                            db.update(TarefaContract.EtiquetaDados.TABLE_NAME,valuesEtiqueta,where,null);
+                        //Dialogo de Nova etiqueta
+                        AlertDialog.Builder builder = new AlertDialog.Builder(GerenciarTarefaActivity.this);
+                        View viewBuilder = getLayoutInflater().inflate(R.layout.nova_etiqueta_dialog_layout, null);
+                        final EditText nomeEtiqueta = (EditText) viewBuilder.findViewById(R.id.editNovaEtiqueta);
+                        builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String where = "_ID = " + idEtiqueta;
+                                ContentValues valuesEtiqueta = new ContentValues();
+                                valuesEtiqueta.put(TarefaContract.EtiquetaDados.COLUMN_NOME, nomeEtiqueta.getText().toString());
+                                db.update(TarefaContract.EtiquetaDados.TABLE_NAME, valuesEtiqueta, where, null);
 
-                            valuesEtiqueta = new ContentValues();
-                            valuesEtiqueta.put(TarefaContract.EtiquetaDados.COLUMN_NOME,"Nova Etiqueta");
-                            db.insert(TarefaContract.EtiquetaDados.TABLE_NAME,null,valuesEtiqueta);
-                            cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
-                            etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
-                            Toast.makeText(GerenciarTarefaActivity.this,"Etiqueta Criada", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                                valuesEtiqueta = new ContentValues();
+                                valuesEtiqueta.put(TarefaContract.EtiquetaDados.COLUMN_NOME, "Nova Etiqueta");
+                                db.insert(TarefaContract.EtiquetaDados.TABLE_NAME, null, valuesEtiqueta);
+                                cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null, null, null);
+                                etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
+                                etiquetaCriarTarefaAdapter.setIdEtiquetasMarcadas(idEtiquetas);
+                                Toast.makeText(GerenciarTarefaActivity.this, "Etiqueta Criada", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    });
-                    builder.setTitle("Criar nova Etiqueta");
-                    builder.setView(viewBuilder);
-                    builder.show();
+                            }
+                        });
+                        builder.setTitle("Criar nova Etiqueta");
+                        builder.setView(viewBuilder);
+                        builder.show();
+                    }
                 }
             }
-
             @Override
             public void onEtiquetaCriarTarefaLongClick(View v, int position) {
                 Toast.makeText(GerenciarTarefaActivity.this, "Teste Long Click", Toast.LENGTH_SHORT).show();
@@ -239,24 +245,27 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
 
             @Override
             public void onEtiquetaCriarTarefaLongClick(View v, int position, final long idEtiqueta) {
-                if (position < (etiquetaCriarTarefaAdapter.getItemCount() - 1)) {
-                    AlertDialog.Builder mensagem = new AlertDialog.Builder(GerenciarTarefaActivity.this);
-                    mensagem.setTitle("Alerta");
-                    mensagem.setMessage("Tem certeza que deseja excluir a etiqueta?");
-                    mensagem.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            removeRegistro(idEtiqueta);
-                            Toast.makeText(GerenciarTarefaActivity.this, "Etiqueta excluida", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    mensagem.setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                if (editavel) {
+                    if (position < (etiquetaCriarTarefaAdapter.getItemCount() - 1)) {
+                        AlertDialog.Builder mensagem = new AlertDialog.Builder(GerenciarTarefaActivity.this);
+                        mensagem.setTitle("Alerta");
+                        mensagem.setMessage("Tem certeza que deseja excluir a etiqueta?");
+                        mensagem.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                gerenciaIdEtiqueta(idEtiqueta);
+                                removeRegistro(idEtiqueta);
+                                Toast.makeText(GerenciarTarefaActivity.this, "Etiqueta excluida", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        mensagem.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    });
-                    mensagem.show();
+                            }
+                        });
+                        mensagem.show();
+                    }
                 }
             }
         });
@@ -267,7 +276,9 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         cursorPreencherEtiqueta = db.rawQuery(where,null);
     }
 
+    //Remove registro etiqueta
     private void removeRegistro(long idEtiqueta){
+        /*
         cursorEtiqueta.moveToFirst();
         while(cursorEtiqueta.isAfterLast()==false){
             if(cursorEtiqueta.getLong(cursorEtiqueta.getColumnIndex(TarefaContract.TarefaDados._ID))==idEtiqueta){
@@ -275,12 +286,23 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
             }
             cursorEtiqueta.moveToNext();
         }
-        String where = "_ID" + "=" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
-        String where2 = "id_etiqueta" + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+        String where = TarefaContract.EtiquetaDados._ID + "=" +cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
+        String where2 = "id_etiqueta + = " + cursorEtiqueta.getString((cursorEtiqueta.getColumnIndex(TarefaContract.EtiquetaDados._ID)));
         db.delete(TarefaContract.EtiquetaDados.TABLE_NAME,where,null);
         db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME, where2,null);
         cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
         etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta);
+        */
+        String where = TarefaContract.EtiquetaDados._ID + "=" + idEtiqueta;
+        db.delete(TarefaContract.EtiquetaDados.TABLE_NAME,where,null);
+
+        where = TarefaContract.TarefaEtiquetaDados.COLUMN_ID_ETIQUETA + " = " + idEtiqueta;
+        db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME,where,null);
+        cursorEtiqueta = db.query(TarefaContract.EtiquetaDados.TABLE_NAME, TarefaContract.TABELA_ETIQUETA, null, null, null,null, null);
+        preencheCheckBox();
+        //idEtiquetas = new ArrayList<>();
+        //preencheIdEtiqueta();
+        etiquetaCriarTarefaAdapter.alteraDados(cursorEtiqueta, cursorPreencherEtiqueta);
     }
 
     private void preencheIdEtiqueta(){
@@ -462,7 +484,6 @@ public class GerenciarTarefaActivity extends AppCompatActivity {
         db.delete(TarefaContract.TarefaEtiquetaDados.TABLE_NAME,where,null);
         where = "_ID" + "=" + cursor.getString((cursor.getColumnIndex(TarefaContract.TarefaDados._ID)));
         db.delete(TarefaContract.TarefaDados.TABLE_NAME,where,null);
-
         db.close();
     }
 

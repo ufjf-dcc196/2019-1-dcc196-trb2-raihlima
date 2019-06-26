@@ -14,9 +14,13 @@ import android.widget.TextView;
 import com.example.trabalho2.R;
 import com.example.trabalho2.dados.TarefaContract;
 
+import java.util.ArrayList;
+
 public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCriarTarefaAdapter.ViewHolder>{
     private Cursor cursor;
     private Cursor cursorPreenchido;
+    private ArrayList <Long> idEtiquetasMarcadas;
+    private boolean bloqueio = false;
     private EtiquetaCriarTarefaAdapter.OnEtiquetaCriarTarefaClickListener listener;
 
     public EtiquetaCriarTarefaAdapter(){
@@ -27,6 +31,16 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
         this.cursorPreenchido=null;
     }
 
+    public void setIdEtiquetasMarcadas(ArrayList<Long> idEtiquetasMarcadas) {
+        this.idEtiquetasMarcadas = idEtiquetasMarcadas;
+        notifyDataSetChanged();
+    }
+
+    public void setBloqueio(boolean bloqueio) {
+        this.bloqueio = bloqueio;
+        notifyDataSetChanged();
+    }
+
     public EtiquetaCriarTarefaAdapter(Cursor cursor, Cursor cursorPreenchido) {
         this.cursor = cursor;
         this.cursorPreenchido = cursorPreenchido;
@@ -34,6 +48,12 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
 
     public void alteraDados(Cursor cursor){
         this.cursor = cursor;
+        notifyDataSetChanged();
+    }
+
+    public void alteraDados(Cursor cursor, Cursor cursorPreenchido){
+        this.cursor = cursor;
+        this.cursorPreenchido = cursorPreenchido;
         notifyDataSetChanged();
     }
 
@@ -59,6 +79,15 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
             String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
             viewHolder.id = cursor.getLong(cursor.getColumnIndex(TarefaContract.TarefaDados._ID));
             viewHolder.nomeEtiqueta.setText(nome);
+            viewHolder.nomeEtiqueta.setChecked(false);
+            if(idEtiquetasMarcadas!=null){
+                for(int i=0;i<idEtiquetasMarcadas.size();i++){
+                    if(cursor.getLong(cursor.getColumnIndex(TarefaContract.EtiquetaDados._ID))==idEtiquetasMarcadas.get(i)){
+                        viewHolder.nomeEtiqueta.setChecked(true);
+                    }
+                }
+            }
+
         } else {
             cursor.moveToPosition(index);
             String nome = this.cursor.getString(cursor.getColumnIndex(TarefaContract.EtiquetaDados.COLUMN_NOME));
@@ -66,14 +95,22 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
             viewHolder.nomeEtiqueta.setText(nome);
             //viewHolder.nomeEtiqueta.setEnabled(false);
             cursorPreenchido.moveToFirst();
+            viewHolder.nomeEtiqueta.setChecked(false);
             for(int i=0;i<cursorPreenchido.getCount();i++){
                 if(cursor.getLong(cursor.getColumnIndex(TarefaContract.EtiquetaDados._ID))==cursorPreenchido.getLong(cursorPreenchido.getColumnIndex(TarefaContract.EtiquetaDados._ID))){
                     viewHolder.nomeEtiqueta.setChecked(true);
-
+                    break;
                 }
                 cursorPreenchido.moveToNext();
             }
         }
+
+        if(bloqueio==true){
+            viewHolder.nomeEtiqueta.setEnabled(false);
+        } else {
+            viewHolder.nomeEtiqueta.setEnabled(true);
+        }
+       // notifyDataSetChanged();
     }
 
     @Override
@@ -99,8 +136,10 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null) {
-                        alteraEstado();
-                        listener.onEtiquetaCriarTarefaClick(v, position, id);
+                        if(bloqueio==false){
+                            alteraEstado();
+                            listener.onEtiquetaCriarTarefaClick(v, position, id);
+                        }
                     }
                 }
             });
@@ -109,9 +148,11 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
                 public boolean onLongClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null) {
-                        listener.onEtiquetaCriarTarefaLongClick(v, position, id);
+                        if(bloqueio==false)
+                            listener.onEtiquetaCriarTarefaLongClick(v, position, id);
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             });
         }
@@ -124,18 +165,16 @@ public class EtiquetaCriarTarefaAdapter extends RecyclerView.Adapter <EtiquetaCr
             }
         }
 
-
         @Override
         public boolean onLongClick(View v) {
             int position = getAdapterPosition();
-            if(position!=RecyclerView.NO_POSITION){
+            if(position!=RecyclerView.NO_POSITION && bloqueio==false){
                 listener.onEtiquetaCriarTarefaLongClick(v,position);
             }
             return false;
         }
 
         public void alteraEstado(){
-
             if(!nomeEtiqueta.isChecked()){
                 nomeEtiqueta.setChecked(true);
             } else {

@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         dataBase = helper.getWritableDatabase();
         values = new ContentValues();
 
-
         preencheCursor();
 
         recyclerView = findViewById(R.id.rvTarefas);
@@ -94,10 +93,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if(newText==null || newText.equalsIgnoreCase("")){
+                    cursor = dataBase.query(TarefaContract.TarefaDados.TABLE_NAME, TarefaContract.TABELA_TAREFA, null, null, null,null, TarefaContract.TarefaDados.COLUMN_ESTADO + " ASC");
+                    tarefaDadosAdapter.alteraDados(cursor);
+                }
                 return false;
             }
         });
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
